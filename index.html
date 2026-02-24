@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mini Loja Online</title>
+<style>
+body { font-family: Arial; background:#f4f4f4; text-align:center; }
+.container { width:300px; margin:auto; background:white; padding:20px; margin-top:50px; border-radius:10px; }
+input, button { width:100%; margin:5px 0; padding:8px; }
+.produto { background:#eee; margin:5px; padding:5px; border-radius:5px; }
+</style>
+</head>
+<body>
+
+<div class="container" id="auth">
+<h2>Login / Criar Conta</h2>
+<input type="text" id="username" placeholder="Usuário">
+<input type="password" id="password" placeholder="Senha">
+<button onclick="register()">Criar Conta</button>
+<button onclick="login()">Entrar</button>
+</div>
+
+<div class="container" id="store" style="display:none;">
+<h2>Loja Online</h2>
+
+<h3>Criar Produto</h3>
+<input type="text" id="produtoNome" placeholder="Nome do Produto">
+<input type="number" id="produtoPreco" placeholder="Preço">
+<button onclick="criarProduto()">Criar Produto</button>
+
+<h3>Produtos</h3>
+<div id="listaProdutos"></div>
+
+<button onclick="logout()">Sair</button>
+</div>
+
+<script>
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+let usuarioLogado = null;
+
+function salvar() {
+localStorage.setItem("usuarios", JSON.stringify(usuarios));
+localStorage.setItem("produtos", JSON.stringify(produtos));
+}
+
+function register() {
+let user = username.value;
+let pass = password.value;
+
+if(usuarios[user]) {
+alert("Usuário já existe!");
+return;
+}
+
+usuarios[user] = pass;
+salvar();
+alert("Conta criada!");
+}
+
+function login() {
+let user = username.value;
+let pass = password.value;
+
+if(usuarios[user] === pass) {
+usuarioLogado = user;
+auth.style.display = "none";
+store.style.display = "block";
+mostrarProdutos();
+} else {
+alert("Login errado!");
+}
+}
+
+function logout() {
+usuarioLogado = null;
+auth.style.display = "block";
+store.style.display = "none";
+}
+
+function criarProduto() {
+let nome = produtoNome.value;
+let preco = produtoPreco.value;
+
+produtos.push({nome, preco, dono: usuarioLogado});
+salvar();
+mostrarProdutos();
+}
+
+function comprar(index) {
+alert("Compra realizada!");
+}
+
+function mostrarProdutos() {
+listaProdutos.innerHTML = "";
+produtos.forEach((p, i) => {
+listaProdutos.innerHTML += `
+<div class="produto">
+${p.nome} - R$${p.preco}
+<button onclick="comprar(${i})">Comprar</button>
+</div>
+`;
+});
+}
+</script>
+
+</body>
+</html>
